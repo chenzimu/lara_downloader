@@ -7,20 +7,12 @@ srcs = []
 
 def get_video_url(href, session):
     series_page = session.get(href)
-    # print(series_page.text)
     series_page_soup = BeautifulSoup(series_page.text)
-    video_src = 'http:' + series_page_soup.find('source', {'data-quality' : 'HD'})['src']
-    # video_src_dic = dict(urlparse.parse_qs(urlparse.urlsplit(video_src).query))
-    # data = {'profile_id' : video_src_dic['profile_id'][0], 's' : video_src_dic['s'][0]}
-    # video_res = requests.get(video_src, allow_redirects=False)
+    video_src = base_url + series_page_soup.find('a', {'title' : 'Download Video'})['href']
+    video_get_location = session.get(video_src, allow_redirects=False)
+    video_location = 'http:' + video_get_location.headers['location']
 
 
-
-
-
-
-
-# Get Csrf Token
 session = requests.Session()
 index = session.get('https://laracasts.com')
 cookie = index.headers['set-cookie']
@@ -40,7 +32,7 @@ r = session.post(url, data=payload, headers=headers)
 
 if r.status_code == 200:
     print('Login successfully!')
-    response = requests.get('https://laracasts.com/series/vim-mastery')
+    response = requests.get('https://laracasts.com/series/intermediate-laravel')
     response_soup = BeautifulSoup(response.text)
     title_list = response_soup.find_all('span', {'class' : 'Lesson-List__title'})
     for title in title_list:
@@ -48,5 +40,3 @@ if r.status_code == 200:
         get_video_url(href, session)
 else:
     print(r.text)
-
-
