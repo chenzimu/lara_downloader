@@ -48,9 +48,12 @@ def get_video_url(hrefs, session):
         video_download_location = get_video.headers['location']
         # 获取文件的文件名
         pased_location = urlparse(video_download_location)
+        print(video_download_location)
+        with open('url.txt', 'a') as o:
+            o.write(video_download_location + '\n')
         pased_location_query = parse_qs(pased_location.query)
         download_video_dict[pased_location_query['filename'][0]] = video_download_location
-    begin_download(download_video_dict)
+    # begin_download(download_video_dict)
 
 def download_init(username, password, down_url):
     """
@@ -90,4 +93,4 @@ def download_init(username, password, down_url):
 
 
 # init
-download_init('sdlichen@gmail.com', 2668739128, 'https://laracasts.com/series/intermediate-laravel')
+download_init('sdlichen@gmail.com', 2668739128, 'https://laracasts.com/series/learning-vue-step-by-step')
