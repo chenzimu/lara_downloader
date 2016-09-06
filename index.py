@@ -1,6 +1,7 @@
 import requests
 import urllib.parse as urlparse
 import os
+from urllib.parse import urlparse, parse_qs
 from bs4 import BeautifulSoup
 
 base_url = 'https://laracasts.com'
@@ -10,11 +11,24 @@ proxies = {
   'https': 'http://127.0.0.1:1080',
 }
 
-def begin_download(urls):
-    os.system('D:')
-    os.system('cd Program Files (x86)/Thunder Network/Thunder/Program')
-    os.system('Thunder.exe')
-    print(urls)
+def begin_download(urls_dict):
+    print('############################')
+    print('############################')
+    print('#######START DOWNLOAD#######')
+    print('############################')
+    print('############################')
+    for filename,url in urls_dict.items():
+        with open(filename, 'wb') as file_obj:
+            print('Downloding %s ***********************' % filename)
+            r = requests.get(url, stream=True)
+            total_length = r.headers['content-type']
+
+            if total_length is None:
+                file_obj.write(r.content)
+            else:
+                for data in r.iter_content(chunk_size=4096):
+                    file_obj.write(data)
+
 
 def get_video_url(hrefs, session):
     """
@@ -23,7 +37,7 @@ def get_video_url(hrefs, session):
     :param session:
     :return:
     """
-    download_video_urls = []
+    download_video_dict = {}
     for href in hrefs:
         series_page = session.get(href)
         series_page_soup = BeautifulSoup(series_page.text)
@@ -32,8 +46,11 @@ def get_video_url(hrefs, session):
         video_location = 'https:' + video_get_location.headers['location']
         get_video = requests.get(video_location, allow_redirects=False, proxies=proxies)
         video_download_location = get_video.headers['location']
-        download_video_urls.append(video_download_location)
-    begin_download(download_video_urls)
+        # 获取文件的文件名
+        pased_location = urlparse(video_download_location)
+        pased_location_query = parse_qs(pased_location.query)
+        download_video_dict[pased_location_query['filename'][0]] = video_download_location
+    begin_download(download_video_dict)
 
 def download_init(username, password, down_url):
     """
