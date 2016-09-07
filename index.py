@@ -8,8 +8,9 @@ base_url = 'https://laracasts.com'
 
 # 下载需要代理
 proxies = {
-  'https': 'http://127.0.0.1:1080',
+    'https': 'http://127.0.0.1:1080',
 }
+
 
 def begin_download(urls_dict):
     print('############################')
@@ -17,7 +18,7 @@ def begin_download(urls_dict):
     print('#######START DOWNLOAD#######')
     print('############################')
     print('############################')
-    for filename,url in urls_dict.items():
+    for filename, url in urls_dict.items():
         with open(filename, 'wb') as file_obj:
             print('Downloding %s ***********************' % filename)
             r = requests.get(url, stream=True)
@@ -41,10 +42,12 @@ def get_video_url(hrefs, session):
     for href in hrefs:
         series_page = session.get(href)
         series_page_soup = BeautifulSoup(series_page.text)
-        video_src = base_url + series_page_soup.find('a', {'title' : 'Download Video'})['href']
+        video_src = base_url + \
+            series_page_soup.find('a', {'title': 'Download Video'})['href']
         video_get_location = session.get(video_src, allow_redirects=False)
         video_location = 'https:' + video_get_location.headers['location']
-        get_video = requests.get(video_location, allow_redirects=False, proxies=proxies)
+        get_video = requests.get(
+            video_location, allow_redirects=False, proxies=proxies)
         video_download_location = get_video.headers['location']
         # 获取文件的文件名
         pased_location = urlparse(video_download_location)
@@ -52,8 +55,10 @@ def get_video_url(hrefs, session):
         with open('url.txt', 'a') as o:
             o.write(video_download_location + '\n')
         pased_location_query = parse_qs(pased_location.query)
-        download_video_dict[pased_location_query['filename'][0]] = video_download_location
+        download_video_dict[
+            pased_location_query['filename'][0]] = video_download_location
     # begin_download(download_video_dict)
+
 
 def download_init(username, password, down_url):
     """
@@ -84,7 +89,8 @@ def download_init(username, password, down_url):
         print('Login successfully!')
         response = requests.get(down_url)
         response_soup = BeautifulSoup(response.text)
-        title_list = response_soup.find_all('span', {'class': 'Lesson-List__title'})
+        title_list = response_soup.find_all(
+            'span', {'class': 'Lesson-List__title'})
         for title in title_list:
             hrefs.append(base_url + title.a['href'])
         get_video_url(hrefs, session)
@@ -93,4 +99,5 @@ def download_init(username, password, down_url):
 
 
 # init
-download_init('sdlichen@gmail.com', 2668739128, 'https://laracasts.com/series/learning-vue-step-by-step')
+download_init('sdlichen@gmail.com', 2668739128,
+              'https://laracasts.com/series/learning-vue-step-by-step')
