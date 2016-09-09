@@ -1,6 +1,6 @@
 import requests
 import urllib.parse as urlparse
-import os
+import sys
 from urllib.parse import urlparse, parse_qs
 from bs4 import BeautifulSoup
 
@@ -60,13 +60,16 @@ def get_video_url(hrefs, session):
     # begin_download(download_video_dict)
 
 
-def download_init(username, password, down_url):
+def download_init():
     """
     这个函数的作用是根据用户名和密码获取所有的链接地址
     :param username:
     :param password:
     :return:
     """
+    username = sys.argv[1]
+    password = sys.argv[2]
+    down_url = sys.argv[3]
     hrefs = []
     session = requests.Session()
     index = session.get('https://laracasts.com')
@@ -99,5 +102,4 @@ def download_init(username, password, down_url):
 
 
 # init
-download_init('sdlichen@gmail.com', 2668739128,
-              'https://laracasts.com/series/learning-vue-step-by-step')
+download_init()
