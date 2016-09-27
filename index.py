@@ -72,7 +72,7 @@ def download_init():
     down_url = sys.argv[3]
     hrefs = []
     session = requests.Session()
-    index = session.get('https://laracasts.com')
+    index = session.get('https://laracasts.com', proxies=proxies)
     cookie = index.headers['set-cookie']
     index_soup = BeautifulSoup(index.content, 'html.parser')
     token = index_soup.find('login-button')['token']
@@ -84,8 +84,20 @@ def download_init():
     }
     url = 'https://laracasts.com/sessions'
     headers = {
-        'cookie': cookie
+        'accept': 'application/json, text/javascript, */*; q=0.01',
+        'accept-encoding': 'gzip, deflate, br',
+        'accept-language': 'zh-CN,zh;q=0.8,en;q=0.6',
+        'cache-control': 'no-cache',
+        'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        'cookie': cookie,
+        'origin': 'https://laracasts.com',
+        'pragma': 'no-cache',
+        'referer': 'https://laracasts.com/',
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36',
+        'x-csrf-token': token,
+        'x-requested-with': 'XMLHttpRequest'
     }
+
     r = session.post(url, data=payload, headers=headers)
 
     if r.status_code == 200:
@@ -98,7 +110,8 @@ def download_init():
             hrefs.append(base_url + title.a['href'])
         get_video_url(hrefs, session)
     else:
-        print(r.text)
+        print(r.headers)
+        print(r)
 
 
 # init
